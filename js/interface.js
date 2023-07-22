@@ -103,10 +103,11 @@ function interface_wait_time_decide() {
   return speed_factor*500;
 }
 function parse_sudoku_atom(atom) {
+  parts = atom.split(/,|\(|\)/)
   if (atom.startsWith("solution(")) {
-    i = atom[9];
-    j = atom[11];
-    v = parseInt(atom[13]);
+    i = parseInt(parts[1]);
+    j = parseInt(parts[2]);
+    v = parseInt(parts[3]);
     return {
       i: i-1,
       j: j-1,
@@ -114,9 +115,9 @@ function parse_sudoku_atom(atom) {
       positive: true,
     }
   } else if (atom.startsWith("-solution(")) {
-    i = atom[10];
-    j = atom[12];
-    v = parseInt(atom[14]);
+    i = parseInt(parts[1]);
+    j = parseInt(parts[2]);
+    v = parseInt(parts[3]);
     return {
       i: i-1,
       j: j-1,
