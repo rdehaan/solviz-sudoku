@@ -1,11 +1,43 @@
 // This file is released under the MIT license.
 // See LICENSE.md.
 
+lit_to_atom = {};
+model_found = false;
+
+var log = "";
+var logElement = document.getElementById('log');
+var decisions = Array();
+
+function get_atom_from_lit(lit) {
+  if (lit > 0) {
+    atom = lit_to_atom[lit];
+  }
+  else {
+    atom = "-" + lit_to_atom[-lit];
+  }
+  return atom;
+}
+
 function interface_register_watch(lit, atom) {
+  lit_to_atom[lit] = atom;
   console.log("Interface: registered watch " + atom + " (" + lit + ")");
 }
-function interface_propagate(lit, atom) {
-  console.log("Interface: propagate " + atom + " (" + lit + ")");
+function interface_propagate(lit) {
+  if (!need_to_update_graphics()) {
+    return;
+  }
+  atom = get_atom_from_lit(lit);
+  index = decisions.findIndex(elem => (elem.type == "decision") && (elem.lit == -lit));
+  if (index > -1) {
+    decisions.length = index;
+    decision_obj = {
+      type: "conclusion",
+      lit: lit,
+    }
+    decisions.push(decision_obj);
+    write_decisions_to_log();
+  }
+  console.log("Interface: propagate " + lit + " " + atom);
   atom_obj = parse_sudoku_atom(atom);
   if (atom_obj != null && atom_obj.positive) {
     sudoku_set_cell_value(atom_obj.i, atom_obj.j, atom_obj.val);
@@ -14,9 +46,23 @@ function interface_propagate(lit, atom) {
   }
   sudoku_render_board();
 }
-function interface_undo(lit, atom) {
-  console.log("Interface: undo " + atom + " (" + lit + ")");
-  atom_obj = parse_sudoku_atom(atom);
+function interface_undo(lit) {
+  if (!need_to_update_graphics()) {
+    return;
+  }
+  var atom = get_atom_from_lit(lit);
+  var index = decisions.findIndex(elem => (elem.type == "decision") && (elem.lit == lit));
+  if (index > -1) {
+    decisions.length = index;
+    decision_obj = {
+      type: "conclusion",
+      lit: lit,
+    }
+    decisions.push(decision_obj);
+    write_decisions_to_log();
+  }
+  console.log("Interface: undo " + lit + " " + atom);
+  var atom_obj = parse_sudoku_atom(atom);
   if (atom_obj != null && atom_obj.positive) {
     sudoku_set_cell_value(atom_obj.i, atom_obj.j, null);
   } else if (atom_obj != null && !atom_obj.positive) {
@@ -24,13 +70,28 @@ function interface_undo(lit, atom) {
   }
   sudoku_render_board();
 }
-function interface_decide() {
-  console.log("Interface: decide");
+function interface_decide(lit) {
+  atom = get_atom_from_lit(lit);
+  decision_obj = {
+    type: "decision",
+    lit: lit,
+  }
+  decisions.push(decision_obj);
+  write_decisions_to_log();
+  console.log("Interface: decide " + lit + " " + atom);
 }
 function interface_check(model) {
-  console.log("Interface: check " + model);
+  atoms = Array();
+  for (let index = 0; index < model.length; ++index) {
+    atom = get_atom_from_lit(model[index]);
+    if (atom != null) {
+      atoms.push(atom);
+    }
+  }
+  model_found = true;
+  console.log("Interface: check " + atoms);
   updateOutput();
-  if (document.getElementById("pause-on-model").checked) {
+  if (need_to_update_graphics() && document.getElementById("pause-on-model").checked) {
     do_pause();
   }
 }
@@ -56,6 +117,9 @@ function interface_before_start() {
       }
     }
   }
+  decisions = Array();
+  write_decisions_to_log();
+  model_found = false;
 }
 function watched_predicates() {
   return "solution";
@@ -162,6 +226,76 @@ function do_resume() {
   document.getElementById("resume").disabled = true;
   Module.can_resume = true;
 }
+
+function clearLog() {
+  log = "";
+  updateLog();
+}
+
+function addToLog(text) {
+  log = text + "\n" + log;
+  updateLog();
+}
+
+function updateLog() {
+  if (logElement) {
+    logElement.textContent = log;
+    // logElement.scrollTop = logElement.scrollHeight; // focus on bottom
+  }
+}
+
+function decision_to_text(atom) {
+  atom_obj = parse_sudoku_atom(atom);
+  if (atom_obj != null) {
+    if (atom_obj.positive) {
+      return "- Choosing to put value " + atom_obj.val + " in cell R" + (atom_obj.i+1) + "C" + (atom_obj.j+1);
+    } else {
+      return "- Choosing to rule out value " + atom_obj.val + " for cell R" + (atom_obj.i+1) + "C" + (atom_obj.j+1);
+    }
+  }
+}
+
+function conclusion_to_text(atom) {
+  atom_obj = parse_sudoku_atom(atom);
+  if (atom_obj != null) {
+    if (atom_obj.positive) {
+      return "- Chose to exclude value " + atom_obj.val + " for cell R" + (atom_obj.i+1) + "C" + (atom_obj.j+1) + ", which led to no solution\n  so concluding that cell R" + (atom_obj.i+1) + "C" + (atom_obj.j+1) + " contains value " + atom_obj.val;
+    } else {
+      return "- Chose to put value " + atom_obj.val + " in cell R" + (atom_obj.i+1) + "C" + (atom_obj.j+1) + ", which led to no solution\n  so concluding that cell R" + (atom_obj.i+1) + "C" + (atom_obj.j+1) + " does not have value " + atom_obj.val;
+    }
+  }
+}
+
+function write_decisions_to_log() {
+  if (!need_to_update_graphics()) {
+    return;
+  }
+  log = "";
+  if (decisions.length == 0) {
+    log = "(None..)";
+  }
+  for (let index = 0; index < decisions.length; ++index) {
+    decision = decisions[index];
+    if (decision.type == "decision") {
+      log = decision_to_text(get_atom_from_lit(decision.lit)) + "..\n" + log;
+    }
+    else if (decision.type == "conclusion") {
+      log = conclusion_to_text(get_atom_from_lit(decision.lit)) + "..\n" + log;
+    }
+  }
+  updateLog();
+}
+
+function need_to_update_graphics() {
+  var index = document.getElementById("mode").selectedIndex;
+  if (index == 0 && model_found == true) {
+    return false;
+  }
+  return true;
+}
+
+clearLog();
+addToLog("Ready...");
 
 sudoku_initialize_board();
 sudoku_render_board();

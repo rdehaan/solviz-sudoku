@@ -103,6 +103,13 @@ blockquote {
     margin-bottom: 0; }
 
 /**
+ * Log formatting
+ */
+.log {
+  background-color: #fee;
+}
+
+/**
  * Code formatting
  */
 pre,

@@ -4,6 +4,11 @@ See LICENSE.md.
 The code in this file is taken (in modified form) from:
 https://github.com/potassco/potassco.github.io */
 
+#log {
+  margin: 10px auto;
+  font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
+  text-align:left;
+}
 #output {
   margin: 10px auto;
   font: 12px/normal 'Monaco', 'Menlo', 'Ubuntu Mono', 'Consolas', 'source-code-pro', monospace;
