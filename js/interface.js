@@ -147,22 +147,37 @@ function interface_finish() {
   }, speed_factor*1000);
 }
 function interface_wait_time_propagate() {
+  if (!need_to_update_graphics()) {
+    return 0;
+  }
   speed_factor = document.getElementById("speed").value;
   return speed_factor*1000;
 }
 function interface_wait_time_undo() {
+  if (!need_to_update_graphics()) {
+    return 0;
+  }
   speed_factor = document.getElementById("speed").value;
   return speed_factor*1000;
 }
 function interface_wait_time_check() {
+  if (!need_to_update_graphics()) {
+    return 0;
+  }
   speed_factor = document.getElementById("speed").value;
   return speed_factor*2000;
 }
 function interface_wait_time_on_model() {
+  if (!need_to_update_graphics()) {
+    return 0;
+  }
   speed_factor = document.getElementById("speed").value;
   return speed_factor*0;
 }
 function interface_wait_time_decide() {
+  if (!need_to_update_graphics()) {
+    return 0;
+  }
   speed_factor = document.getElementById("speed").value;
   return speed_factor*500;
 }
