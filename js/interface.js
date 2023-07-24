@@ -15,6 +15,13 @@ function get_atom_from_lit(lit) {
   else {
     atom = "-" + lit_to_atom[-lit];
   }
+  if (atom == null) {
+    if (lit > 0) {
+      atom = "aux(" + lit +")";
+    } else {
+      atom = "-aux(" + -lit + ")";
+    }
+  }
   return atom;
 }
 
@@ -76,10 +83,12 @@ function interface_check(model) {
     atom = get_atom_from_lit(model[index]);
     if (atom != null) {
       atom_obj = parse_sudoku_atom(atom);
-      if (atom_obj != null && atom_obj.positive) {
+      if (atom_obj != null && !atom_obj.auxiliary && atom_obj.positive) {
         sudoku_set_cell_value(atom_obj.i, atom_obj.j, atom_obj.val);
       }
-      atoms.push(atom);
+      if (atom.startsWith("solution(" || atom.startsWith("-solution("))) {
+        atoms.push(atom);
+      }
     }
   }
   sudoku_render_board();
@@ -186,6 +195,7 @@ function parse_sudoku_atom(atom) {
       i: i-1,
       j: j-1,
       val: v,
+      auxiliary: false,
       positive: true,
     }
   } else if (atom.startsWith("-solution(")) {
@@ -196,7 +206,22 @@ function parse_sudoku_atom(atom) {
       i: i-1,
       j: j-1,
       val: v,
+      auxiliary: false,
       positive: false,
+    }
+  } else if (atom.startsWith("aux(")) {
+    v = parseInt(parts[1]);
+    return {
+      v: v,
+      positive: true,
+      auxiliary: true,
+    }
+  } else if (atom.startsWith("-aux(")) {
+    v = parseInt(parts[1]);
+    return {
+      v: v,
+      positive: false,
+      auxiliary: true,
     }
   } else {
     return null;
@@ -257,10 +282,14 @@ function updateLog() {
 function decision_to_text(atom) {
   atom_obj = parse_sudoku_atom(atom);
   if (atom_obj != null) {
-    if (atom_obj.positive) {
+    if (!atom_obj.auxiliary && atom_obj.positive) {
       return "- Branched by putting value " + atom_obj.val + " in cell R" + (atom_obj.i+1) + "C" + (atom_obj.j+1);
-    } else {
+    } else if (!atom_obj.auxiliary && !atom_obj.positive) {
       return "- Branched by ruling out value " + atom_obj.val + " for cell R" + (atom_obj.i+1) + "C" + (atom_obj.j+1);
+    } else if (atom_obj.auxiliary && atom_obj.positive) {
+      return "- Branched by setting auxiliary variable " + atom_obj.v + " to true";
+    } else if (atom_obj.auxiliary && !atom_obj.positive) {
+      return "- Branched by setting auxiliary variable " + atom_obj.v + " to false";
     }
   }
 }
