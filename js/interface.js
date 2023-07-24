@@ -43,7 +43,7 @@ function interface_propagate(lit) {
   atom_obj = parse_sudoku_atom(atom);
   if (atom_obj != null && atom_obj.positive) {
     sudoku_set_cell_value(atom_obj.i, atom_obj.j, atom_obj.val);
-  } else if (atom_obj != null && !atom_obj.positive) {
+  } else if (atom_obj != null && !atom_obj.auxiliary && !atom_obj.positive) {
     sudoku_remove_candidate(atom_obj.i, atom_obj.j, atom_obj.val);
   }
   sudoku_render_board();
@@ -62,7 +62,7 @@ function interface_undo(lit) {
   var atom_obj = parse_sudoku_atom(atom);
   if (atom_obj != null && atom_obj.positive) {
     sudoku_set_cell_value(atom_obj.i, atom_obj.j, null);
-  } else if (atom_obj != null && !atom_obj.positive) {
+  } else if (atom_obj != null && !atom_obj.auxiliary && !atom_obj.positive) {
     sudoku_add_candidate(atom_obj.i, atom_obj.j, atom_obj.val);
   }
   sudoku_render_board();
