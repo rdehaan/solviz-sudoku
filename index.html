@@ -32,9 +32,13 @@ See LICENSE.md.
         <div class="post-content">
           <div class="center">
 
+            <p>
+              <b>Problem encoding:</b>
+            </p>
+
             <ul class="hlist">
               <li>
-                <b>Example encodings:</b>
+                Load from example:
               </li>
               <li>
                 <select id="examples" onchange="load_example()">
@@ -58,9 +62,13 @@ See LICENSE.md.
 
             <pre id="input"></pre>
 
+            <p>
+              <b>Sudoku:</b>
+            </p>
+
             <ul class="hlist">
               <li>
-                <b>Sudoku:</b>
+                Input manually:
               </li>
               <li>
                 <input type="text" pattern="\d*" id="sudoku-input" value=""/>
@@ -72,7 +80,7 @@ See LICENSE.md.
             </ul>
             <ul class="hlist">
               <li>
-                <i>Example sudokus:</i>
+                Load from example:
               </li>
               <select id="example-sudokus" onchange="load_example_sudoku()">
                 <option value=""></option>
@@ -99,11 +107,14 @@ See LICENSE.md.
               </select>
             </ul>
 
+            <div>&nbsp;</div>
+
+            <p>
+              <b>Solver configuration:</b>
+            </p>
+
             <ul class="hlist">
-              <li>
-                <b>Configuration:</b>
-              </li>
-              <li>reasoning mode
+              <li>Reasoning mode:
                 <select id="mode">
                   <option selected>default</option>
                   <option>enumerate all</option>
@@ -118,7 +129,7 @@ See LICENSE.md.
 
             <ul class="hlist">
               <li>
-                <i>Speed:</i>
+                Speed:
               </li>
               <li>
               <select id="speed">
@@ -132,15 +143,19 @@ See LICENSE.md.
               </li>
             </ul>
 
+            <p>
+              <b>Control:</b>
+            </p>
+
             <input type="button" id="run" value="&#x25ba; Run!" onclick="solve()" disabled/>&nbsp;
             <input type="button" id="pause" value="Pause" onclick="do_pause()" disabled/>&nbsp;
             <input type="button" id="resume" value="Resume" onclick="do_resume()" disabled/>
 
-            <div>&nbsp;</div>
+            <p>&nbsp;</p>
 
-            <div>
+            <p>
               <b>Sudoku board:</b>
-            </div>
+            </p>
 
             <div id="sudoku" class="sudoku-board"></div>
 
