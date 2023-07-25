@@ -317,6 +317,19 @@ function need_to_update_graphics() {
   return true;
 }
 
+function toggle_configuration() {
+  content = document.getElementById("configuration");
+  if (content.style.display === "block") {
+    content.style.display = "none";
+  } else {
+    content.style.display = "block";
+  }
+  button = document.getElementById("configuration-toggle");
+  button.innerHTML = button.innerHTML.replace("▸", "▿");
+  button.innerHTML = button.innerHTML.replace("▾", "▸");
+  button.innerHTML = button.innerHTML.replace("▿", "▾");
+}
+
 clearLog();
 write_decisions_to_log();
 

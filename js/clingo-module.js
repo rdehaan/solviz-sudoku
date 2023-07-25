@@ -38,12 +38,34 @@ function load_example_from_path(path) {
 
 function solve() {
   interface_before_start();
-  options = "--heuristic=Domain";
+  options = "";
   var index = document.getElementById("mode").selectedIndex;
   if (index >= 0) {
     if (index == 1) {
       options += " --opt-mode=optN 0";
     }
+  }
+  var index = document.getElementById("heuristic").selectedIndex;
+  if (index == 0) {
+    options += " --heuristic=Domain"
+  } else if (index == 1) {
+    options += " --heuristic=Berkmin"
+  } else if (index == 2) {
+    options += " --heuristic=Vmtf"
+  } else if (index == 3) {
+    options += " --heuristic=Vsids"
+  } else if (index == 4) {
+    options += " --heuristic=Unit"
+  } else if (index == 5) {
+    options += " --heuristic=None"
+  }
+  restart_num = document.getElementById("restarts").valueAsNumber;
+  if (restart_num != NaN && restart_num >= 1) {
+    options += " --restarts F," + restart_num;
+  }
+  more_options = document.getElementById("more-options").value;
+  if (more_options != "") {
+    options += " " + more_options;
   }
   output = "";
   Clingo.ccall('run', 'number', ['string', 'string', 'string'], [input.getValue() + hidden_program, options, watched_predicates()])

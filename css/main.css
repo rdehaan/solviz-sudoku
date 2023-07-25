@@ -472,3 +472,19 @@ pre {
     color: #008080; }
   .highlight .il {
     color: #099; }
+
+div.collapsible {
+  display: none;
+}
+a.collapsible{
+  color: black;
+  text-decoration-line: none;
+}
+a.collapsible:hover {
+  color: black;
+  text-decoration-line: none;
+}
+a.collapsible:active {
+  color: black;
+  text-decoration-line: none;
+}

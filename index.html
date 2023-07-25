@@ -113,22 +113,61 @@ See LICENSE.md.
             <div>&nbsp;</div>
 
             <p>
-              <b>Solver configuration:</b>
+              <a href="javascript:toggle_configuration()" class="collapsible" id="configuration-toggle"><b>Solver configuration &#9656;</b></a>
             </p>
 
-            <ul class="hlist">
-              <li>Reasoning mode:
-                <select id="mode">
-                  <option selected>default</option>
-                  <option>enumerate all</option>
-                </select>
-              </li>
-              <li>
-                <label>
-                  <input type="checkbox" id="pause-on-model" checked />&nbsp;pause on model
-                </label>
-              </li>
-            </ul>
+            <div class="collapsible" id="configuration">
+              <ul class="hlist">
+                <li>Reasoning mode:
+                  <select id="mode">
+                    <option selected>default</option>
+                    <option>enumerate all</option>
+                  </select>
+                </li>
+                <li>
+                  <label>
+                    <input type="checkbox" id="pause-on-model" checked />&nbsp;pause on model
+                  </label>
+                </li>
+              </ul>
+
+              <ul class="hlist">
+                <li>Branching heuristic:
+                  <select id="heuristic">
+                    <option selected>Default (use for #heuristic)</option>
+                    <option>Berkmin</option>
+                    <option>Vmtf</option>
+                    <option>Vsids</option>
+                    <option>Unit</option>
+                    <option>None</option>
+                  </select>
+                </li>
+              </ul>
+
+              <ul class="hlist">
+                <li>Restart after every _ conflicts:
+                  <input type="number" size="5" min="0" id="restarts" />
+                </li>
+                <li>
+                  (leave empty or enter 0 for default)
+                </li>
+              </ul>
+
+              <ul class="hlist">
+                <li>Custom options:
+                  <input type="text" id="more-options" />
+                </li>
+                <li>
+                  (enter '--help=3' to see all options)
+                </li>
+              </ul>
+            </div>
+
+            <div>&nbsp;</div>
+
+            <p>
+              <b>Control:</b>
+            </p>
 
             <ul class="hlist">
               <li>
@@ -145,10 +184,6 @@ See LICENSE.md.
               </select>
               </li>
             </ul>
-
-            <p>
-              <b>Control:</b>
-            </p>
 
             <input type="button" id="run" value="&#x25ba; Run!" onclick="solve()" disabled/>&nbsp;
             <input type="button" id="pause" value="Pause" onclick="do_pause()" disabled/>&nbsp;
